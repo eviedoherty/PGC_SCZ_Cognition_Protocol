@@ -3,4 +3,5 @@ for the PGC SCZ Working Group Cognition Subgroup project "Exploring the Genetic 
 A Meta-Analytic Approach"
 
 Lead Analyst: Evie Doherty
+
 Principal Investigator: Prof. Derek Morris
