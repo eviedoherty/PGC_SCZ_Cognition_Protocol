@@ -1,0 +1,527 @@
+---
+title: "Phenotype_Protocol_Code"
+output: html_document
+date: "2026-07-09"
+---
+
+```{r}
+#READ IN DATASET
+
+setwd("/set/working/directory")
+data <- read.csv("My_Cognitve_Data.csv")
+data
+#N INDIVIDUALS
+```
+
+```{r}
+#STEP 1 - FILTER TO CASES ONLY
+#FILTERING TO CONTAIN INDIVIDUALS WITH A SCHZIPHRENIA OR SCHIZOAFFECTIVE DISORDER DIAGNOSIS
+data_cases <- data %>%
+  filter(diagnosis_colname %in% c("SZ", "SZA"))
+data_cases
+#N CASES
+```
+
+```{r}
+#STEP 2 - FILTER THE DATAFRAME TO ONLY CONTAIN THE RELEVANT VARIABLES 
+library(dplyr)
+
+data_cases_filtered <- data_cases %>%
+  select(Proband, PGC_ID, Diagnosis, Group, Age, Sex, verbal_learning_task, working_memory_task, processing_speed_task, executive_function_task)
+#N SAMPLES 
+```
+
+```{r}
+#STEP 3 - FILTER THE DATAFRAME TO CONTAIN ONLY THOSE WHO HAVE AGE DATA
+sum(!is.na(data_cases_filtered$age_colname))
+#N individuals with age data 
+
+#the below code filters the dataframe to only contain those with age data
+data_cases_filtered_age <- data_cases_filtered %>%
+  filter(!is.na(age_colname))
+
+#For demographics purposes get the age range within the dataset
+range(data_cases_filtered_age$age_colname, na.rm = TRUE)
+#Age Range: X-Y Years
+```
+
+
+```{r}
+#STEP 4 - CHECK IF INDIVIDUALS PRESENT HAVE SEX DATA - SEX WILL BE USED AS A COVARIATE
+#WHERE SEX DATA IS NOT PRESENT THIS INFORMATION CAN BE ACQUIRED FROM THE GENOTYPE DATA - NOT A REQUIREMENT THAT THE SAMPLES HAVE SEX DATA
+
+sum(!is.na(data_cases_filtered_age$sex_colname))
+#X SAMPLES HAVE SEX DATA - this was also manually checked to ensure the data was present
+
+data_cases_filtered_age
+table(data_cases_filtered_age$sex)
+#N Female
+#N Male
+```
+
+```{r}
+#STEP 5 - CHECK THE % MISSINGNESS FOR EACH AVAILABLE COGNITIVE VARIABLE 
+#THIS CAN BE LOOPED FOR EFFICIENCY - NOT DONE HERE FOR TRANSPARENCY
+mean(is.na(data_cases_filtered_age$verbal_learning_task)) * 100
+sum(is.na(data_cases_filtered_age$verbal_learning_task))
+#X% MISSING DATA
+#N samples Missing Data
+```
+
+```{r}
+mean(is.na(data_cases_filtered_age$working_memory_task)) * 100
+sum(is.na(data_cases_filtered_age$working_memory_task))
+#X% MISSING DATA
+#N samples Missing Data
+```
+
+```{r}
+mean(is.na(data_cases_filtered_age$processing_speed_task)) * 100
+sum(is.na(data_cases_filtered_age$processing_speed_task))
+#X% MISSING DATA
+#X samples Missing Data
+```
+
+```{r}
+mean(is.na(data_cases_filtered_age$executive_function_task)) * 100
+sum(is.na(data_cases_filtered_age$executive_function_task))
+#X% MISSING DATA
+#X samples Missing Data
+```
+
+
+```{r}
+#STEP 6 - GET THE COMPLETE CASES NUMBER AND THE EXACT TESTS/DOMAINS MAXIMISING THE SAMPLE
+#THIS CODE PRODUCES THE NUMBER OF COMPLETE CASES IF A MINIMUM OF N DOMAINS WERE APPLIED:
+#I.E. 200 COMPLETE SAMPLES WOULD BE CARRIED FORWARD FOR ANALYSIS WHERE A MINIMUM OF 3 DOMAINS WAS IN PLACE
+
+#THIS CODE WILL TELL YOU THE NUMBER OF COMPLETE CASES IF 2/3/4/5/6 DOMAINS WERE USED - HELPS THE DECISION MAKING PROCESS ON THE NUMBER OF TESTS/DOMAINS CAN BE INCLUDED WHILE STILL MAXIMISING THE SAMPLE - SEE PROTOCOL 
+
+library(tidyverse)
+
+#INPUT TESTS HERE ACCORDING TO THEIR PRIMARY COGNITIVE DEMAND
+#ADD MORE DOMAINS WHERE NECESSARY
+domains <- list(
+  verbal = c("verbal_learning_task"),
+  processing = c("processing_speed_task"),
+  executive = c("executive_function_task"),
+  working_mem = c("wokring_memory_task")
+)
+
+all_nonempty_subsets <- function(x) {
+  unlist(
+    lapply(1:length(x), function(k) combn(x, k, simplify = FALSE)),
+    recursive = FALSE
+  )
+}
+
+results <- list()
+
+for (min_domains in 2:length(domains)) {
+
+  all_domain_sets <- unlist(
+    lapply(min_domains:length(domains),
+           function(k) combn(names(domains), k, simplify = FALSE)),
+    recursive = FALSE
+  )
+
+  for (dcombo in all_domain_sets) {
+
+    domain_test_sets <- lapply(dcombo, function(d) {
+      all_nonempty_subsets(domains[[d]])
+    })
+
+
+    test_grid <- expand.grid(
+      domain_test_sets,
+      KEEP.OUT.ATTRS = FALSE,
+      stringsAsFactors = FALSE
+    )
+
+    colnames(test_grid) <- dcombo
+
+    for (i in seq_len(nrow(test_grid))) {
+
+  
+      tests <- unlist(as.list(test_grid[i, ]), recursive = TRUE)
+
+      n_complete <- sum(
+        complete.cases(
+         data_cases_filtered_age[, tests, drop = FALSE] #ADD DATAFRAME HERE
+        )
+      )
+
+      results[[length(results) + 1]] <- tibble(
+        min_domains = min_domains,
+        actual_domains = length(dcombo),
+        domains_used = paste(dcombo, collapse = " + "),
+        n_tests = length(tests),
+        tests = paste(tests, collapse = " + "),
+        n = n_complete
+      )
+    }
+  }
+}
+
+results_df <- bind_rows(results)
+
+#NAME ACCORDINGLY
+best_results_data <- results_df %>%
+  arrange(desc(n), desc(min_domains), desc(n_tests))
+
+best_results_data
+```
+
+```{r}
+#write out the file and save the combinations 
+setwd("/set/working/directory")
+write.table(best_results_data,
+            file = "cog_test_combination_data.txt",
+            sep = "\t",
+            row.names = FALSE,
+            quote = FALSE)
+```
+
+
+```{r}
+#STEP 7 - ISOALTE SAMPLES MAXIMISING THE DATASET INTO OWN DATAFRAME
+
+#RULE: THE NUMBER OF DOMAINS WERE INCREASED WHERE INCREASING THE NUMBER OF DOMAINS DID NOT COMPROMISE THE SAMPLE SIZE BY MORE THAN 1% OF THE POSSIBLE SAMPLE I.E. THOSE WITH X3 DOMAINS AND AT LEAST X1 TEST PER DOMAINS (see protocol)
+
+#3 Domains = 129 individuals, 4 domains = 128 individuals, 12 tests (0.77% sample difference from 3 domains). 5 domains = 127 (1.55% difference from 3 domain sample)
+#4 domains chosen as <1% decrease in sample size 
+
+
+library(dplyr)
+
+data_complete_cases <- data_cases_filtered_age %>%
+  filter(complete.cases(across(c(verbal_learning_task, processing_speed_task, working_memory_task, executive_function_task))))
+#N individuals as expected 
+data_complete_cases
+```
+
+```{r}
+#STEP 8 - LOOK AT THE RANGES FOR EACH MEASURE
+vars <- c("verbal_learning_task", "processing_speed_task", "working_memory_task", "executive_function_task")
+
+data.frame(
+  Variable = vars,
+  Min = sapply(data_complete_cases[vars], min, na.rm = TRUE), #there should be no NAs at this point 
+  Max = sapply(data_complete_cases[vars], max, na.rm = TRUE)
+)
+```
+
+
+```{r}
+#STEP 9 - FLAG THE OUTLIERS FOR REMOVAL 
+#WRITTEN FUNCTION
+flag_outliers_raw <- function(data, measures, id_var = NULL) {
+
+  means <- sapply(data[measures], mean, na.rm = TRUE)
+  sds   <- sapply(data[measures], sd, na.rm = TRUE)
+
+  lower_3sd <- means - 3 * sds
+  upper_3sd <- means + 3 * sds
+
+  results <- lapply(seq_len(nrow(data)), function(i) {
+
+    scores <- as.numeric(data[i, measures])
+
+    outlier_idx <- which(scores < lower_3sd | scores > upper_3sd)
+    outlier_measures <- measures[outlier_idx]
+
+    remove_flag <- length(outlier_measures) > 0
+
+    data.frame(
+      row = i,
+
+      outliers_3sd = paste(outlier_measures, collapse = ", "),
+
+      n_outliers_3sd = length(outlier_measures),
+
+      remove_flag = remove_flag,
+
+      stringsAsFactors = FALSE
+    )
+  })
+
+  results <- do.call(rbind, results)
+
+  if (!is.null(id_var)) {
+    results <- cbind(ID = data[[id_var]], results)
+  }
+
+  cutoffs <- data.frame(
+    measure = measures,
+    mean = means,
+    sd = sds,
+    lower_3sd = lower_3sd,
+    upper_3sd = upper_3sd
+  )
+
+  flagged_ids <- NULL
+  if (!is.null(id_var)) {
+    flagged_ids <- unique(data[[id_var]][results$remove_flag])
+  } else {
+    flagged_ids <- results$row[results$remove_flag]
+  }
+
+  return(list(
+    participant_results = results,
+    cutoffs = cutoffs,
+    flagged_ids = flagged_ids
+  ))
+}
+
+#FUNCTION IN USE 
+#verbal_learning_task, processing_speed_task, working_memory_task, executive_function_task
+
+outliers_data_all <- flag_outliers_raw(
+  data = data_complete_cases,
+  measures = c("verbal_learning_task", 
+               "processing_speed_task", 
+               "working_memory_task", 
+               "executive_function_task"),
+  id_var = "ID_colname"
+)
+
+# Participants flagged for removal
+subset(outliers_data_all$participant_results, remove_flag)
+
+# View cutoffs used for each measure
+outliers_data_all$cutoffs
+```
+
+
+```{r}
+#STEP 10 - WINDSORISING (SAMPLE)
+data_complete_cases[5, "verbal_learning_task"] <- 69
+
+data_complete_cases[20, "processing_speed_task"] <- 35
+
+data_complete_cases[92, "executive_function_task"] <- 12
+
+```
+
+```{r}
+#WRITE OUT THE DATAFRAME AFTER WINDSORISING
+write.csv(data_complete_cases, "data_complete_cases", row.names = FALSE)
+```
+
+```{r}
+#STEP 11 - NORMALITY & SKEWNESS CHECKS 
+#HISTOGRAM - verbal learning task
+library(ggplot2)
+ggplot(data_complete_cases, aes(x = verbal_learning_task)) +
+  geom_histogram(bins = 30)
+```
+
+```{r}
+#QQ PLOTS - verbal learning task
+ggplot(data_complete_cases, aes(sample = verbal_learning_task)) +
+  stat_qq() +
+  stat_qq_line()
+```
+
+
+```{r}
+#HISTOGRAM - processing speed task
+ggplot(data_complete_cases, aes(x = processing_speed_task)) +
+  geom_histogram(bins = 30)
+```
+
+
+```{r}
+#QQ PLOTS - processing speed task
+ggplot(data_complete_cases, aes(sample = processing_speed_task)) +
+  stat_qq() +
+  stat_qq_line()
+```
+
+
+```{r}
+#HISTOGRAM - working memory task
+ggplot(data_complete_cases, aes(x = wokring_memory_task)) +
+  geom_histogram(bins = 30)
+```
+
+
+```{r}
+#QQ PLOTS - working memory task
+ggplot(data_complete_cases, aes(sample = working_memory_task)) +
+  stat_qq() +
+  stat_qq_line()
+```
+
+
+```{r}
+#HISTOGRAM - executive function task
+ggplot(data_complete_cases, aes(x = executive_function_task)) +
+  geom_histogram(bins = 30)
+```
+
+
+```{r}
+#QQ PLOTS - executive function task
+ggplot(data_complete_cases, aes(sample = executive_function_task)) +
+  stat_qq() +
+  stat_qq_line()
+```
+
+```{r}
+#AT THIS POINT, BINARY MEASURES OR THOSE DEMONSTRATING EXTREME FLOOR OR CEILING EFFECTS ARE DROPPED AND STEPS 6-11 ARE REPEATED WITHOUT DROPPED MEASURES
+```
+
+
+```{r}
+#STEP 12 - TRANSFORMATIONS (WHERE NECESSARY BASED ON HISTOGRAMS AND QQ PLOTS)
+#THESE ARE GENERALLY LOG OR SQUARE ROOT 
+
+##### EXAMPLE TRANSFORM PROCESSING SPEED TASK #####
+#POSITIVE SKEW
+data_complete_cases$log_processing_speed_task <- log(data_complete_cases_new$processing_speed_task)
+
+#COMPARE HISOGRAMS AND QQ FROMS BEFORE TRANSFORMATION VS AFTER TRANSFORMATION
+#HISTOGRAMS
+ggplot(data_complete_cases, aes(x = processing_speed_task)) +
+  geom_histogram(bins = 30)
+ggplot(data_complete_cases, aes(x = log_processing_speed_task)) +
+  geom_histogram(bins = 30)
+
+#QQ PLOTS
+ggplot(data_complete_cases, aes(sample = processing_speed_task)) +
+  stat_qq() +
+  stat_qq_line()
+ggplot(data_complete_cases, aes(sample = log_processing_speed_task)) +
+  stat_qq() +
+  stat_qq_line()
+
+#WHERE A NEGATIVE SKEW IS PRESENT AND REFLECTION IS REQUIRED BEFORE TRANSFORMATION IS APPLIED
+#REFLECTION COFE
+data_complete_cases$processing_speed_task_reflected <-
+  max(data_complete_cases$processing_speed_task) -
+  data_complete_cases$processing_speed_task + 1
+```
+
+
+```{r}
+#STEP 13 - ORIENT SCORES SO THAT HIGHER FUNCTIONING = BETTER COGNITIVE ABILITY/PERFORMANCE
+data_complete_cases$log_processing_speed_task_oriented <- -data_complete_cases$log_processing_speed_task
+```
+
+
+```{r}
+#ALL TRANSFORMATIONS AND ORIENTATIONS HAVE BEEN APPLIED. THE FINAL VARIABLES FOR USE ARE AS FOLLOWS:
+#log_processing_speed_task_oriented
+#verbal_learning_task
+#working_memory_task
+#executive_function_task
+```
+
+```{r}
+#STEP 14 - AGE RESIDUALISATION PROCESSING SPEED TASK
+model <- lm(log_processing_speed_task_oriented ~ age_colname, data = data_complete_cases)
+
+dara_complete_cases$age_resid_processing_speed <- residuals(model)
+```
+
+```{r}
+#AGE RESIDUALISATION VERBAL LEARNING TASK
+model <- lm(verbal_learning_task ~ age_colname, data = data_complete_cases)
+
+dara_complete_cases$age_resid_verbal_learning <- residuals(model)
+```
+
+```{r}
+#AGE RESIDUALISATION WORKING MEMORY TASK
+model <- lm(working_memory_task ~ age_colname, data = data_complete_cases)
+
+dara_complete_cases$age_resid_working_memory <- residuals(model)
+```
+
+```{r}
+#AGE RESIDUALISATION EXECUTIVE FUNCTION TASK
+model <- lm(executive_function_task ~ age_colname, data = data_complete_cases)
+
+dara_complete_cases$age_resid_executive_function <- residuals(model)
+```
+
+
+```{r}
+#STEP 15 - STANDARDISING SCORES
+######## Z SCORES ########
+
+#Z SCORES PROCESSING SPEED TASK
+data_complete_cases$z_score_processing_speed <- as.numeric(scale(data_complete_cases$age_resid_processing_speed))
+```
+
+```{r}
+#Z SCORES VERBAL LEARNING TASK
+data_complete_cases$z_score_verbal_learning <- as.numeric(scale(data_complete_cases$age_resid_verbal_learning))
+```
+
+```{r}
+#Z SCORES WORKING MEMORY
+data_complete_cases$z_score_working_memory <- as.numeric(scale(data_complete_cases$age_resid_working_memory))
+```
+
+```{r}
+#Z SCORES EXECUTIVE FUNCTION
+data_complete_cases$z_score_executive_function <- as.numeric(scale(data_complete_cases$age_resid_executive_function))
+```
+
+
+```{r}
+#STEP 16 - RUN CRONBACH'S ALPHA
+####### CRONBACH'S ALPHA TO HELP DETERMINE THE NUMBER OF TESTS TO CARRY FORWARD AND INTERNAL CONSISTENCY ########
+
+library(psych)
+
+alpha(data_complete_cases[, c("z_score_processing_speed", "z_score_verbal_learning", "z_score_working_memory", "z_score_executive_function")])
+```
+
+
+```{r}
+#write out final dataframe for PCA
+setwd("/Set/path/to/working/directory/")
+write.csv(data_complete_cases, "data_complete_cases_for_PCA.txt", row.names = FALSE)
+```
+
+```{r}
+######## RUN PCA ########
+
+setwd("/Set/path/to/working/directory/")
+data_for_pca <- read.table("data_complete_cases_for_PCA.txt", header = TRUE, sep = ",",na.strings = "NA")
+data_for_pca
+```
+
+```{r}
+library(psych)
+#AT THIS POINT EXECLUDE ANY MEASURE THAT WAS IDENTIFIED AS A WEAK CORRELATE BY THE CRONBACH'S ALPHA (see protocol)
+
+pca_data <- principal(data_for_pca[, c("z_score_processing_speed", "z_score_verbal_learning", "z_score_working_memory", "z_score_executive_function")], nfactors = 2, rotate = "none", scores = TRUE)
+```
+
+```{r}
+#FACTOR LOADINGS OF EACH VARIABLE
+pca_data$loadings
+#X% OF VARIANCE
+```
+
+```{r}
+#psych package
+scree(data_for_pca[, c("z_score_processing_speed", "z_score_verbal_learning", "z_score_working_memory", "z_score_executive_function")], factors = FALSE)
+```
+
+```{r}
+#PARALLEL ANALYSIS (PSYCH PACKAGE)
+fa.parallel(data_for_pca[, c("z_score_processing_speed", "z_score_verbal_learning", "z_score_working_memory", "z_score_executive_function")],
+            fa = "pc")
+```
+
+```{r}
+#ADDING PCA VALUES FOR PC1 TO THE DATASET FOR USE
+data_for_pca$g <- pca_data$scores[,1]
+data_for_pca
+```
+
