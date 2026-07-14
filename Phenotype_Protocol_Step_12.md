@@ -22,7 +22,7 @@ ggplot(data_complete_cases, aes(sample = log_processing_speed_task)) +
   stat_qq_line()
 
 #WHERE A NEGATIVE SKEW IS PRESENT AND REFLECTION IS REQUIRED BEFORE TRANSFORMATION IS APPLIED
-#REFLECTION COFE
+#REFLECTION CODE
 data_complete_cases$processing_speed_task_reflected <-
   max(data_complete_cases$processing_speed_task) -
   data_complete_cases$processing_speed_task + 1
