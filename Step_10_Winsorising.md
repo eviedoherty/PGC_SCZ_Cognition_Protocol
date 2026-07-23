@@ -1,5 +1,5 @@
 ```{r}
-#STEP 10 - WINDSORISING (EXAMPLE)
+#STEP 10 - WINSORISING (EXAMPLE)
 
 data_complete_cases[5, "verbal_learning_task"] <- 69
 
