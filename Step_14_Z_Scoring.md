@@ -11,5 +11,5 @@ cognitive_domains <- c(
 
 for (domain in cognitive_domains) {
   data_complete_cases_clean[[paste0("z_score_", sub("^age_resid_", "", domain))]] <- #note that your age residualised cognitive measure variables should be name as follows for this code to work: "age_resid_*_*"
-    as.numeric(scale(data_complete_cases_clean[[domain]]))
+    as.numeric(scale(data_complete_cases_clean[[domain]])) #adjust to match dataframe name
 }
