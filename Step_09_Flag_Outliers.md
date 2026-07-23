@@ -1,42 +1,13 @@
 ```{r}
-#STEP 9 - FLAG THE OUTLIERS FOR REMOVAL 
-#WRITTEN FUNCTION
+flag_and_replace_outliers <- function(data, measures, id_var = NULL) {
 
-flag_outliers_raw <- function(data, measures, id_var = NULL) {
+  data_clean <- data
 
   means <- sapply(data[measures], mean, na.rm = TRUE)
   sds   <- sapply(data[measures], sd, na.rm = TRUE)
 
   lower_3sd <- means - 3 * sds
   upper_3sd <- means + 3 * sds
-
-  results <- lapply(seq_len(nrow(data)), function(i) {
-
-    scores <- as.numeric(data[i, measures])
-
-    outlier_idx <- which(scores < lower_3sd | scores > upper_3sd)
-    outlier_measures <- measures[outlier_idx]
-
-    remove_flag <- length(outlier_measures) > 0
-
-    data.frame(
-      row = i,
-
-      outliers_3sd = paste(outlier_measures, collapse = ", "),
-
-      n_outliers_3sd = length(outlier_measures),
-
-      remove_flag = remove_flag,
-
-      stringsAsFactors = FALSE
-    )
-  })
-
-  results <- do.call(rbind, results)
-
-  if (!is.null(id_var)) {
-    results <- cbind(ID = data[[id_var]], results)
-  }
 
   cutoffs <- data.frame(
     measure = measures,
@@ -46,17 +17,78 @@ flag_outliers_raw <- function(data, measures, id_var = NULL) {
     upper_3sd = upper_3sd
   )
 
-  flagged_ids <- NULL
+  replacements <- data.frame()
+
+  for (measure in measures) {
+
+    lower <- lower_3sd[measure]
+    upper <- upper_3sd[measure]
+
+    outlier_rows <- which(
+      data_clean[[measure]] < lower |
+      data_clean[[measure]] > upper
+    )
+
+    if (length(outlier_rows) == 0) next
+
+    valid_values <- data_clean[[measure]][
+      data_clean[[measure]] >= lower &
+      data_clean[[measure]] <= upper
+    ]
+
+    for (row in outlier_rows) {
+
+      old_value <- data_clean[[measure]][row]
+
+      new_value <- valid_values[
+        which.min(abs(valid_values - old_value))
+      ]
+
+      replacements <- rbind(
+        replacements,
+        data.frame(
+          row = row,
+          measure = measure,
+          old_value = old_value,
+          new_value = new_value
+        )
+      )
+
+      data_clean[[measure]][row] <- new_value
+    }
+  }
+
+
+  participant_results <- lapply(seq_len(nrow(data)), function(i) {
+
+    scores <- as.numeric(data[i, measures])
+
+    outlier_idx <- which(
+      scores < lower_3sd | scores > upper_3sd
+    )
+
+    data.frame(
+      row = i,
+      outliers_3sd = paste(measures[outlier_idx], collapse = ", "),
+      n_outliers_3sd = length(outlier_idx),
+      remove_flag = length(outlier_idx) > 0
+    )
+  })
+
+  participant_results <- do.call(rbind, participant_results)
+
   if (!is.null(id_var)) {
-    flagged_ids <- unique(data[[id_var]][results$remove_flag])
-  } else {
-    flagged_ids <- results$row[results$remove_flag]
+    participant_results <- cbind(
+      ID = data[[id_var]],
+      participant_results
+    )
   }
 
   return(list(
-    participant_results = results,
+    cleaned_data = data_clean,
+    participant_results = participant_results,
     cutoffs = cutoffs,
-    flagged_ids = flagged_ids
+    replacements = replacements
   ))
 }
 
@@ -64,20 +96,13 @@ flag_outliers_raw <- function(data, measures, id_var = NULL) {
 
 ```{r}
 #FUNCTION IN USE 
-#ADD ALL MEASURES THAT MAKE UP THE COMPLETE CASES SAMPLE
 
-outliers_data_all <- flag_outliers_raw(
+outliers_data_all <- flag_and_replace_outliers(
   data = data_complete_cases,
   measures = c("verbal_learning_task", 
                "processing_speed_task", 
-               "working_memory_task", 
-               "executive_function_task"),
+               "working_memory_task"),
+               "executive_function_task") #replace with 
   id_var = "ID_colname"
 )
-
-# Participants flagged for removal
-subset(outliers_data_all$participant_results, remove_flag)
-
-# View cutoffs used for each measure
-outliers_data_all$cutoffs
 ```
