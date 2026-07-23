@@ -12,7 +12,7 @@ data
 #FILTERING TO CONTAIN INDIVIDUALS WITH A SCHZIOPHRENIA OR SCHIZOAFFECTIVE DISORDER DIAGNOSIS
 
 data_cases <- data %>%
-  filter(diagnosis_colname %in% c("SZ", "SZA")) #adjust accordingly to dataset 
+  filter(diagnosis_colname %in% c("SZ", "SZA")) #adjust to dataset accordingly
 data_cases
 #N CASES
 ```
