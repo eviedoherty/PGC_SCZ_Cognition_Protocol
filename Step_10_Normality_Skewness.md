@@ -1,5 +1,5 @@
 ```{r}
-#STEP 11 - NORMALITY & SKEWNESS CHECKS
+#STEP 10 - NORMALITY & SKEWNESS CHECKS
 
 library(ggplot2)
 
