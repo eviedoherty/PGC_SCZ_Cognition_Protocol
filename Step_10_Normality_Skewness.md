@@ -7,13 +7,13 @@ cognitive_measures <- c(
   "verbal_learning_task", 
   "processing_speed_task", 
   "working_memory_task",
-  "executive_function_task" #
+  "executive_function_task" #adjust to match cognitive measure column names in your dataset
 )
 
 for (measure in cognitive_measures) {
 
   print(
-    ggplot(catie_complete_cases, aes(x = .data[[measure]])) +
+    ggplot(data_complete_cases_clean, aes(x = .data[[measure]])) + #adjust to match your dataframe name
       geom_histogram(bins = 30) +
       labs(title = paste("Histogram:", measure),
            x = measure,
@@ -26,7 +26,7 @@ for (measure in cognitive_measures) {
 for (measure in cognitive_measures) {
 
   print(
-    ggplot(catie_complete_cases, aes(sample = .data[[measure]])) +
+    ggplot(data_complete_cases_clean, aes(sample = .data[[measure]])) + #adjust to match your dataframe name
       stat_qq() +
       stat_qq_line() +
       labs(title = paste("QQ Plot:", measure))
@@ -37,6 +37,6 @@ for (measure in cognitive_measures) {
 ```
 
 ```{r}
-#AT THIS POINT, BINARY MEASURES OR THOSE DEMONSTRATING EXTREME FLOOR OR CEILING EFFECTS ARE DROPPED AND STEPS 6-11 ARE REPEATED WITHOUT DROPPED MEASURES
+#AT THIS POINT, BINARY MEASURES OR THOSE DEMONSTRATING EXTREME FLOOR OR CEILING EFFECTS ARE DROPPED AND STEPS 6-10 ARE REPEATED WITHOUT DROPPED MEASURES
 ```
 
