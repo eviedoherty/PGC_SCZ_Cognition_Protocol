@@ -12,5 +12,5 @@ age_summary <- data_cases_filtered_age %>%
   )
 
 message("Number with age data: ", age_summary$n)
-message("Age range: ", age_summary$min_age, "–", age_summary$max_age, " years")
+message("Age range: ", age_summary$min_age, "–", age_summary$max_age, "years")
 ```
