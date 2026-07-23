@@ -8,4 +8,8 @@ data.frame(
   Min = sapply(data_complete_cases[vars], min, na.rm = TRUE), #there should be no NAs at this point 
   Max = sapply(data_complete_cases[vars], max, na.rm = TRUE)
 )
+
 ```
+
+```{r}
+#AS SCORING RANGES DIFFER IN EACH COGNITIVE MEASURE, WINSORISING WILL NEED NEED TO BE MANUALLY APPLIED IN THE CASE THERE ARE SCORES OUTSIDE THE POSSIBLE RANGE
