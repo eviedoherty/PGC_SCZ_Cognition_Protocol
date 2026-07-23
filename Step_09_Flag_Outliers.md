@@ -1,4 +1,5 @@
 ```{r}
+#FUNCTION
 flag_and_replace_outliers <- function(data, measures, id_var = NULL) {
 
   data_clean <- data
@@ -102,7 +103,30 @@ outliers_data_all <- flag_and_replace_outliers(
   measures = c("verbal_learning_task", 
                "processing_speed_task", 
                "working_memory_task"),
-               "executive_function_task") #replace with 
-  id_var = "ID_colname"
+               "executive_function_task") #adjust to match cognitive measure column names in your dataset
+  id_var = "ID_colname" #adjust to match individual ID column name in your dataset
 )
 ```
+
+```{r}
+#VIEW THE CUTOFF THRESHOLDS
+outliers_data_all$cutoffs
+```
+
+```{r}
+#VIEW THE ROWS FLAGGED FOR WINSORISATION
+subset(outliers_data_all$participant_results, remove_flag)
+```
+
+```{r}
+#ALLOWS YOU TO CHECK THE BEFORE AND AFTER VALUES TO ENSURE THE FUNCTION PERFORMED AS EXPECTED
+outliers_data_all$replacements
+```
+
+```{r}
+#CREATE NEW DATAFRAME CONTAINING THE WINSORISED VALUES
+data_complete_cases_clean <- outliers_data_all$cleaned_data
+```
+
+
+
