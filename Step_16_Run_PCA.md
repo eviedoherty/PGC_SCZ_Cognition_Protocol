@@ -2,7 +2,7 @@
 ######## RUN PCA ########
 
 setwd("/Set/path/to/working/directory/")
-data_for_pca <- read.table("data_complete_cases_for_PCA.txt", header = TRUE, sep = ",",na.strings = "NA")
+data_for_pca <- read.table("data_complete_cases_for_PCA.txt", header = TRUE, sep = ",",na.strings = "NA") #adjust to match dataframe name
 data_for_pca
 ```
 
