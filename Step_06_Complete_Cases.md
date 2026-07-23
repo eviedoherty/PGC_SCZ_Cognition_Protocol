@@ -7,13 +7,13 @@
 library(tidyverse)
 
 #INPUT COGNITIVE MEASURES HERE ACCORDING TO THEIR PRIMARY COGNITIVE DEMAND
-#ADD MORE DOMAINS WHERE NECESSARY
 domains <- list(
-  verbal = c("verbal_learning_task"), 
+  verbal = c("verbal_learning_task"), #adjust to match cognitive measure column names in your dataset 
   processing = c("processing_speed_task"),
   executive = c("executive_function_task"),
-  working_mem = c("wokring_memory_task")
+  working_mem = c("wokring_memory_task") 
 )
+#SEVERAL MEASURES CAN INDEX A SINGLE COGNITIVE DOMAIN. EXAMPLE - working_mem = c("wokring_memory_task_i", "wokring_memory_task_ii", ""wokring_memory_task_iii"). Add as many cognitve tests as necessary. 
 
 all_nonempty_subsets <- function(x) {
   unlist(
@@ -72,7 +72,7 @@ for (min_domains in 2:length(domains)) {
 
 results_df <- bind_rows(results)
 
-#NAME ACCORDINGLY
+#adjust to match name of your dataset 
 best_results_data <- results_df %>%
   arrange(desc(n), desc(min_domains), desc(n_tests))
 
