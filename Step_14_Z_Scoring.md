@@ -3,12 +3,13 @@
 ######## Z SCORES ########
 
 cognitive_domains <- c(
-  "age_resid_logical_mem_1",
-  "age_resid_logical_mem_2",
-  "age_resid_logical_mem_3"
+"log_processing_speed_task_oriented",
+"verbal_learning_task",
+"working_memory_task",
+"executive_function_task"
 )
 
 for (domain in cognitive_domains) {
-  dublin_complete_cases[[paste0("z_score_", sub("^age_resid_", "", domain))]] <-
+  data_complete_cases_clean[[paste0("z_score_", sub("^age_resid_", "", domain))]] <-
     as.numeric(scale(dublin_complete_cases[[domain]]))
 }
