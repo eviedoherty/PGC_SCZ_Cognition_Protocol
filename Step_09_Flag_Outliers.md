@@ -64,7 +64,7 @@ flag_outliers_raw <- function(data, measures, id_var = NULL) {
 
 ```{r}
 #FUNCTION IN USE 
-#verbal_learning_task, processing_speed_task, working_memory_task, executive_function_task
+#ADD ALL MEASURES THAT MAKE UP THE COMPLETE CASES SAMPLE
 
 outliers_data_all <- flag_outliers_raw(
   data = data_complete_cases,
