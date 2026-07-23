@@ -1,16 +1,16 @@
 ```{r}
 #STEP 3 - FILTER THE DATAFRAME TO CONTAIN ONLY THOSE WHO HAVE AGE DATA
 
-sum(!is.na(data_cases_filtered$age_colname))
-#N individuals with age data 
-
-#the below code filters the dataframe to only contain those with age data
-
-data_cases_filtered_age <- data_cases_filtered %>%
+data_cases_filtered_age <- data_cases_filtered %>%  #use this dataframe for the subsequent steps
   filter(!is.na(age_colname))
 
-#For demographics purposes get the age range within the dataset
+age_summary <- data_cases_filtered_age %>%
+  summarise(
+    n = n(),
+    min_age = min(age_colname),
+    max_age = max(age_colname)
+  )
 
-range(data_cases_filtered_age$age_colname, na.rm = TRUE)
-#Age Range: X-Y Years
+message("Number with age data: ", age_summary$n)
+message("Age range: ", age_summary$min_age, "–", age_summary$max_age, " years")
 ```
