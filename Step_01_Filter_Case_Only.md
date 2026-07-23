@@ -9,9 +9,10 @@ data
 
 ```{r}
 #STEP 1 - FILTER TO CASES ONLY
-#FILTERING TO CONTAIN INDIVIDUALS WITH A SCHZIPHRENIA OR SCHIZOAFFECTIVE DISORDER DIAGNOSIS
+#FILTERING TO CONTAIN INDIVIDUALS WITH A SCHZIOPHRENIA OR SCHIZOAFFECTIVE DISORDER DIAGNOSIS
+
 data_cases <- data %>%
-  filter(diagnosis_colname %in% c("SZ", "SZA"))
+  filter(diagnosis_colname %in% c("SZ", "SZA")) #adjust accordingly to dataset 
 data_cases
 #N CASES
 ```
