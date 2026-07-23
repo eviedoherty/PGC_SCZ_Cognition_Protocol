@@ -60,6 +60,9 @@ flag_outliers_raw <- function(data, measures, id_var = NULL) {
   ))
 }
 
+```
+
+```{r}
 #FUNCTION IN USE 
 #verbal_learning_task, processing_speed_task, working_memory_task, executive_function_task
 
@@ -78,4 +81,3 @@ subset(outliers_data_all$participant_results, remove_flag)
 # View cutoffs used for each measure
 outliers_data_all$cutoffs
 ```
-
