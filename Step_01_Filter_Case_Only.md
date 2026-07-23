@@ -14,5 +14,6 @@ data
 data_cases <- data %>%
   filter(diagnosis_colname %in% c("SZ", "SZA")) #adjust to dataset accordingly
 data_cases
-#N CASES
+
+message("Number of cases: ", nrow(data_cases))
 ```
