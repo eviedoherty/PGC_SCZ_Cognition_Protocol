@@ -5,8 +5,8 @@ cognitive_measures <- c("verbal_learning_task", "processing_speed_task", "workin
 
 data.frame(
   Variable = cognitive_measures,
-  Min = sapply(data_complete_cases[vars], min, na.rm = TRUE), #there should be no NAs at this point 
-  Max = sapply(data_complete_cases[vars], max, na.rm = TRUE)
+  Min = sapply(data_complete_cases[cognitive_measures], min, na.rm = TRUE), #there should be no NAs at this point 
+  Max = sapply(data_complete_cases[cognitive_measures], max, na.rm = TRUE)
 )
 
 ```
