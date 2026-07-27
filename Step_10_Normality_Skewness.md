@@ -4,10 +4,11 @@
 library(ggplot2)
 
 cognitive_measures <- c(
-  "verbal_learning_task", 
-  "processing_speed_task", 
-  "working_memory_task",
-  "executive_function_task" #adjust to match cognitive measure column names in your dataset
+  "verbal_learning_i",
+  "verbal_learning_ii",
+  "processing_speed", 
+  "working_memory",
+  "attention" #adjust to match cognitive measure column names in your dataset
 )
 
 for (measure in cognitive_measures) {
