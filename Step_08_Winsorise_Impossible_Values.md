@@ -9,6 +9,11 @@ data.frame(
   Max = sapply(data_complete_cases[cognitive_measures], max, na.rm = TRUE)
 )
 
+#verbal_learning_i - 0-75
+#verbal_learning_ii - 0-15
+#processing_speed - time dependent, no fixed range
+#working_memory - 0-30
+#attention - typically 0-300
 ```
 
 ```{r}
