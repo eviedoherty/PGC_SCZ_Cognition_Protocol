@@ -1,8 +1,7 @@
 ```{r}
 #STEP 5 - CHECK THE % MISSINGNESS FOR EACH AVAILABLE COGNITIVE VARIABLE 
-#THIS CAN BE LOOPED FOR EFFICIENCY - NOT DONE HERE FOR TRANSPARENCY
 
-cognitive_measures <- c("verbal_learning_task", "working_memory", "processing_speed", "executive_function") #add all available cognitive measures from your dataset here
+cognitive_measures <- c("verbal_learning_task", "working_memory", "processing_speed", "executive_function") #adjust to match your cognitive measure column names
 ```
 
 ```{r}
