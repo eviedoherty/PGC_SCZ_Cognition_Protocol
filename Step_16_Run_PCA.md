@@ -10,7 +10,7 @@ data_for_pca
 library(psych)
 #AT THIS POINT EXECLUDE ANY MEASURE THAT WAS IDENTIFIED AS A WEAK CORRELATE BY THE CRONBACH'S ALPHA (see Protocol)
 
-pca_data <- principal(data_for_pca[, c("z_score_processing_speed", "z_score_verbal_learning", "z_score_working_memory", "z_score_executive_function")], nfactors = 1, rotate = "none", scores = TRUE) #adjust to match dataframe and z scored cognitive measure column names
+pca_data <- principal(data_for_pca[, c("z_score_processing_speed", "z_score_verbal_learning_i", "z_score_verbal_learning_ii", "z_score_working_memory", "z_score_attention")], nfactors = 1, rotate = "none", scores = TRUE) #adjust to match dataframe and z scored cognitive measure column names
 ```
 
 ```{r}
@@ -21,8 +21,7 @@ pca_data$loadings #adjust to match dataframe name
 
 ```{r}
 #PARALLEL ANALYSIS (PSYCH PACKAGE)
-fa.parallel(data_for_pca[, c("z_score_processing_speed", "z_score_verbal_learning", "z_score_working_memory", "z_score_executive_function")],
-            fa = "pc") #adjust to match dataframe and z scored cognitive measure column names
+fa.parallel(data_for_pca[, c("z_score_processing_speed", "z_score_verbal_learning_i", "z_score_verbal_learning_ii", "z_score_working_memory", "z_score_attention")], fa = "pc") #adjust to match dataframe and z scored cognitive measure column names
 ```
 
 ```{r}
