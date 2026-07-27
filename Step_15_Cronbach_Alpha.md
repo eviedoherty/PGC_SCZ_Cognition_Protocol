@@ -4,7 +4,7 @@
 
 library(psych)
 
-alpha(data_complete_cases_clean[, c("z_score_processing_speed", "z_score_verbal_learning", "z_score_working_memory", "z_score_executive_function")]) #adjust to match dataframe and z scored cognitive measure column names
+psych::alpha(data_complete_cases_clean[, c("z_score_processing_speed", "z_score_verbal_learning_i", "z_score_verbal_learning_ii", "z_score_working_memory", "z_score_attention")]) #adjust to match dataframe and z scored cognitive measure column names
 ```
 
 
