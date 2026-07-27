@@ -113,22 +113,22 @@ outliers_data_all <- flag_and_replace_outliers(
 
 ```{r}
 #VIEW THE CUTOFF THRESHOLDS
-outliers_data_all$cutoffs
+outliers_data_all$cutoffs   #adjust to match your dataframe name
 ```
 
 ```{r}
 #VIEW THE ROWS FLAGGED FOR WINSORISATION
-subset(outliers_data_all$participant_results, remove_flag)
+subset(outliers_data_all$participant_results, remove_flag)   #adjust to match your dataframe name
 ```
 
 ```{r}
 #ALLOWS YOU TO CHECK THE BEFORE AND AFTER VALUES TO ENSURE THE FUNCTION PERFORMED AS EXPECTED
-outliers_data_all$replacements
+outliers_data_all$replacements   #adjust to match your dataframe name
 ```
 
 ```{r}
 #CREATE NEW DATAFRAME CONTAINING THE WINSORISED VALUES
-data_complete_cases_clean <- outliers_data_all$cleaned_data
+data_complete_cases_clean <- outliers_data_all$cleaned_data   #adjust to match your dataframe name
 ```
 
 
