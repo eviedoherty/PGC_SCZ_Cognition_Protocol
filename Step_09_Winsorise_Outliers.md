@@ -96,15 +96,18 @@ flag_and_replace_outliers <- function(data, measures, id_var = NULL) {
 ```
 
 ```{r}
-#FUNCTION IN USE 
+#FUNCTION IN USE
 
 outliers_data_all <- flag_and_replace_outliers(
-  data = data_complete_cases,
-  measures = c("verbal_learning_task", 
-               "processing_speed_task", 
-               "working_memory_task"),
-               "executive_function_task") #adjust to match cognitive measure column names in your dataset
-  id_var = "ID_colname" #adjust to match individual ID column name in your dataset
+  data = dummy_complete_cases,
+  measures = c(
+    "verbal_learning_i",   #adjust to match cognitive measure column names in your dataset
+    "verbal_learning_ii",   
+    "processing_speed",
+    "working_memory",
+    "attention"
+  ),
+  id_var = "ID"    #adjust to match individual ID column name in your dataset
 )
 ```
 
