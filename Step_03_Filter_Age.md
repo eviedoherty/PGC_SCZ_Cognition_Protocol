@@ -1,5 +1,5 @@
 ```{r}
-#STEP 3 - FILTER THE DATAFRAME TO CONTAIN ONLY THOSE WHO HAVE AGE DATA
+#STEP 3 - FILTER THE DATAFRAME TO CONTAIN SAMPLES WITH AGE DATA
 
 data_cases_filtered_age <- data_cases_filtered %>%  #use this dataframe for the subsequent steps
   filter(!is.na(age_colname)) #add the age column name from your dataset 
