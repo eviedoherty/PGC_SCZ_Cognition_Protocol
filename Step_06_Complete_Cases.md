@@ -72,7 +72,7 @@ for (min_domains in 2:length(domains)) {
 
 results_df <- bind_rows(results)
 
-#adjust to match name of your dataframe 
+#adjust to match your dataframe name
 best_results_data <- results_df %>%
   arrange(desc(n), desc(min_domains), desc(n_tests))
 
