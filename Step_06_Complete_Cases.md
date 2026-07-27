@@ -13,7 +13,7 @@ domains <- list(
   executive = c("executive_function_task"),
   working_mem = c("wokring_memory_task") 
 )
-#SEVERAL MEASURES CAN INDEX A SINGLE COGNITIVE DOMAIN. EXAMPLE - working_mem = c("wokring_memory_task_i", "wokring_memory_task_ii", ""wokring_memory_task_iii"). Add as many cognitve tests as necessary. 
+#SEVERAL MEASURES CAN INDEX A SINGLE COGNITIVE DOMAIN. EXAMPLE - verbal = c("verbal_learning_i", "verbal_learning_ii"). Add as many cognitve tests as necessary. 
 
 all_nonempty_subsets <- function(x) {
   unlist(
