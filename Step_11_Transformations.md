@@ -17,16 +17,16 @@ data_complete_cases_clean$processing_speed_task_reflected <-
 ```{r}
 ##### EXAMPLE TRANSFORMATION USED ON PROCESSING SPEED TASK #####
 #POSITIVE SKEW
-data_complete_cases_clean$log_processing_speed_task <- log(data_complete_cases_clean$processing_speed_task) #adjust to match dataframe and cognitive measure column name
+data_complete_cases_clean$log_processing_speed <- log(data_complete_cases_clean$processing_speed) #adjust to match dataframe and cognitive measure column name
 
 #COMPARE HISTOGRAMS AND QQ PLOTS FROM AFTER TRANSFORMATION TO THOSE BEFORE
 
 #HISTOGRAM
-ggplot(data_complete_cases_clean, aes(x = log_processing_speed_task)) + #adjust to match dataframe and cognitive measure column name
+ggplot(data_complete_cases_clean, aes(x = log_processing_speed)) + #adjust to match dataframe and cognitive measure column name
   geom_histogram(bins = 30)
 
 #QQ PLOTS
-ggplot(data_complete_cases_clean, aes(sample = log_processing_speed_task)) + #adjust to match dataframe and cognitive measure column name
+ggplot(data_complete_cases_clean, aes(sample = log_processing_speed)) + #adjust to match dataframe and cognitive measure column name
   stat_qq() +
   stat_qq_line()
 
