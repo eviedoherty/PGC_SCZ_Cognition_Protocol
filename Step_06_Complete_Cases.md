@@ -8,10 +8,10 @@ library(tidyverse)
 
 #INPUT COGNITIVE MEASURES HERE ACCORDING TO THEIR PRIMARY COGNITIVE DEMAND
 domains <- list(
-  verbal = c("verbal_learning_task"), #adjust to match cognitive measure column names in your dataset 
-  processing = c("processing_speed_task"),
-  executive = c("executive_function_task"),
-  working_mem = c("wokring_memory_task") 
+  verbal = c("verbal_learning_i", "verbal_learning_ii"), #adjust to match cognitive measure column names in your dataset 
+  processing = c("processing_speed"),
+  executive = c("attention"),
+  working_mem = c("working_memory") 
 )
 #SEVERAL MEASURES CAN INDEX A SINGLE COGNITIVE DOMAIN. EXAMPLE - verbal = c("verbal_learning_i", "verbal_learning_ii"). Add as many cognitve tests as necessary. 
 
@@ -72,7 +72,7 @@ for (min_domains in 2:length(domains)) {
 
 results_df <- bind_rows(results)
 
-#adjust to match name of your dataset 
+#adjust to match name of your dataframe 
 best_results_data <- results_df %>%
   arrange(desc(n), desc(min_domains), desc(n_tests))
 
