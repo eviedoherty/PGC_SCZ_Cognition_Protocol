@@ -3,6 +3,6 @@
 library(dplyr)
 
 data_cases_filtered <- data_cases %>%
-  select(Proband, PGC_ID, Diagnosis, Group, Age, Sex, verbal_learning_task, working_memory_task, processing_speed_task, executive_function_task)
+  select(ID, PGC_ID, diagnosis, age, sex, verbal_learning_i, verbal_learning_ii, processing_speed, attention, working_memory)
 
 ```
