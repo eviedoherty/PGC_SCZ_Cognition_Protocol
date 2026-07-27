@@ -4,9 +4,10 @@
 
 cognitive_domains <- c(
 "age_resid_processing_speed",
-"age_resid_verbal_learning",
+"age_resid_verbal_learning_i",
+"age_resid_verbal_learning_ii",
 "age_resid_working_memory",
-"age_resid_executive_function"
+"age_resid_attention"
 )
 
 for (domain in cognitive_domains) {
