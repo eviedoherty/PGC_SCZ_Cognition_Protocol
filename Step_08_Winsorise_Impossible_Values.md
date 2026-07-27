@@ -19,5 +19,6 @@ data.frame(
 ```{r}
 #AS SCORING RANGES DIFFER IN EACH COGNITIVE MEASURE, WINSORISING WILL NEED NEED TO BE MANUALLY APPLIED IN THE CASE THERE ARE SCORES OUTSIDE THE POSSIBLE RANGE
 #EXAMPLE
-data_complete_cases[5, "verbal_learning_task"] <- 69
+dummy_complete_cases[41, "verbal_learning_i"] <- 72
+dummy_complete_cases[14, "verbal_learning_ii"] <- 13
 ```
