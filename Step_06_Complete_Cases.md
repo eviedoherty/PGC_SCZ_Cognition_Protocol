@@ -10,7 +10,7 @@ library(tidyverse)
 domains <- list(
   verbal = c("verbal_learning_i", "verbal_learning_ii"), #adjust to match cognitive measure column names in your dataset 
   processing = c("processing_speed"),
-  executive = c("attention"),
+  attention = c("attention"),
   working_mem = c("working_memory") 
 )
 #SEVERAL MEASURES CAN INDEX A SINGLE COGNITIVE DOMAIN. EXAMPLE - verbal = c("verbal_learning_i", "verbal_learning_ii"). Add as many cognitve tests as necessary. 
